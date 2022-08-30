@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Copyright (c) 2022 Robin Rombach and Patrick Esser and contributors
 
 CreativeML Open RAIL-M
@@ -80,3 +81,37 @@ You agree not to use the Model or Derivatives of the Model:
 - For any use intended to or which has the effect of discriminating against individuals or groups based on legally protected characteristics or categories;
 - To provide medical advice and medical results interpretation;
 - To generate or disseminate information for the purpose to be used for administration of justice, law enforcement, immigration or asylum processes, such as predicting an individual will commit fraud/crime commitment (e.g. by text profiling, drawing causal relationships between assertions made in documents, indiscriminate and arbitrarily-targeted use).
+=======
+MIT License
+
+Copyright (c) 2022 Lincoln D. Stein (https://github.com/lstein)
+
+This software is derived from a fork of the source code available from
+https://github.com/pesser/stable-diffusion and
+https://github.com/CompViz/stable-diffusion. They carry the following
+copyrights:
+
+Copyright (c) 2022 Machine Vision and Learning Group, LMU Munich
+Copyright (c) 2022 Robin Rombach and Patrick Esser and contributors
+
+Please see individual source code files for copyright and authorship
+attributions.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+>>>>>>> d524e5797d33eabb6b2ab9cb36ad61f00a85db73

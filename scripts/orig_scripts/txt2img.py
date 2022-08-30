@@ -14,6 +14,9 @@ from pytorch_lightning import seed_everything
 from torch import autocast
 from contextlib import contextmanager, nullcontext
 
+import k_diffusion as K
+import torch.nn as nn
+
 from ldm.util import instantiate_from_config
 from ldm.models.diffusion.ddim import DDIMSampler
 from ldm.models.diffusion.plms import PLMSSampler
@@ -133,6 +136,11 @@ def main():
         help="use plms sampling",
     )
     parser.add_argument(
+        "--klms",
+        action='store_true',
+        help="use klms sampling",
+    )
+    parser.add_argument(
         "--laion400m",
         action='store_true',
         help="uses the LAION400M model",
@@ -242,6 +250,20 @@ def main():
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model = model.to(device)
 
+    #for klms
+    model_wrap = K.external.CompVisDenoiser(model)
+    class CFGDenoiser(nn.Module):
+        def __init__(self, model):
+            super().__init__()
+            self.inner_model = model
+
+        def forward(self, x, sigma, uncond, cond, cond_scale):
+            x_in = torch.cat([x] * 2)
+            sigma_in = torch.cat([sigma] * 2)
+            cond_in = torch.cat([uncond, cond])
+            uncond, cond = self.inner_model(x_in, sigma_in, cond=cond_in).chunk(2)
+            return uncond + (cond - uncond) * cond_scale
+
     if opt.plms:
         sampler = PLMSSampler(model)
     else:
@@ -292,16 +314,27 @@ def main():
                             prompts = list(prompts)
                         c = model.get_learned_conditioning(prompts)
                         shape = [opt.C, opt.H // opt.f, opt.W // opt.f]
-                        samples_ddim, _ = sampler.sample(S=opt.ddim_steps,
-                                                         conditioning=c,
-                                                         batch_size=opt.n_samples,
-                                                         shape=shape,
-                                                         verbose=False,
-                                                         unconditional_guidance_scale=opt.scale,
-                                                         unconditional_conditioning=uc,
-                                                         eta=opt.ddim_eta,
-                                                         x_T=start_code)
-
+                        
+                        if not opt.klms:
+                            samples_ddim, _ = sampler.sample(S=opt.ddim_steps,
+                                                            conditioning=c,
+                                                            batch_size=opt.n_samples,
+                                                            shape=shape,
+                                                            verbose=False,
+                                                            unconditional_guidance_scale=opt.scale,
+                                                            unconditional_conditioning=uc,
+                                                            eta=opt.ddim_eta,
+                                                            x_T=start_code)
+                        else:
+                            sigmas = model_wrap.get_sigmas(opt.ddim_steps)
+                            if start_code:
+                                x = start_code
+                            else:
+                                x = torch.randn([opt.n_samples, *shape], device=device) * sigmas[0] # for GPU draw
+                            model_wrap_cfg = CFGDenoiser(model_wrap)
+                            extra_args = {'cond': c, 'uncond': uc, 'cond_scale': opt.scale}
+                            samples_ddim = K.sampling.sample_lms(model_wrap_cfg, x, sigmas, extra_args=extra_args)
+                        
                         x_samples_ddim = model.decode_first_stage(samples_ddim)
                         x_samples_ddim = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
                         x_samples_ddim = x_samples_ddim.cpu().permute(0, 2, 3, 1).numpy()
