@@ -1,11 +1,17 @@
 import argparse, os, sys, glob
+<<<<<<< HEAD
 import cv2
+=======
+>>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a
 import torch
 import numpy as np
 from omegaconf import OmegaConf
 from PIL import Image
 from tqdm import tqdm, trange
+<<<<<<< HEAD
 from imwatermark import WatermarkEncoder
+=======
+>>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a
 from itertools import islice
 from einops import rearrange
 from torchvision.utils import make_grid
@@ -21,6 +27,7 @@ from ldm.util import instantiate_from_config
 from ldm.models.diffusion.ddim import DDIMSampler
 from ldm.models.diffusion.plms import PLMSSampler
 
+<<<<<<< HEAD
 from diffusers.pipelines.stable_diffusion.safety_checker import StableDiffusionSafetyChecker
 from transformers import AutoFeatureExtractor
 
@@ -30,12 +37,15 @@ safety_model_id = "CompVis/stable-diffusion-safety-checker"
 safety_feature_extractor = AutoFeatureExtractor.from_pretrained(safety_model_id)
 safety_checker = StableDiffusionSafetyChecker.from_pretrained(safety_model_id)
 
+=======
+>>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a
 
 def chunk(it, size):
     it = iter(it)
     return iter(lambda: tuple(islice(it, size)), ())
 
 
+<<<<<<< HEAD
 def numpy_to_pil(images):
     """
     Convert a numpy image or a batch of images to a PIL image.
@@ -48,6 +58,8 @@ def numpy_to_pil(images):
     return pil_images
 
 
+=======
+>>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a
 def load_model_from_config(config, ckpt, verbose=False):
     print(f"Loading model from {ckpt}")
     pl_sd = torch.load(ckpt, map_location="cpu")
@@ -68,6 +80,7 @@ def load_model_from_config(config, ckpt, verbose=False):
     return model
 
 
+<<<<<<< HEAD
 def put_watermark(img, wm_encoder=None):
     if wm_encoder is not None:
         img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
@@ -97,6 +110,8 @@ def check_safety(x_image):
     return x_checked_image, has_nsfw_concept
 
 
+=======
+>>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a
 def main():
     parser = argparse.ArgumentParser()
 
@@ -272,11 +287,14 @@ def main():
     os.makedirs(opt.outdir, exist_ok=True)
     outpath = opt.outdir
 
+<<<<<<< HEAD
     print("Creating invisible watermark encoder (see https://github.com/ShieldMnt/invisible-watermark)...")
     wm = "StableDiffusionV1"
     wm_encoder = WatermarkEncoder()
     wm_encoder.set_watermark('bytes', wm.encode('utf-8'))
 
+=======
+>>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a
     batch_size = opt.n_samples
     n_rows = opt.n_rows if opt.n_rows > 0 else batch_size
     if not opt.from_file:
@@ -337,6 +355,7 @@ def main():
                         
                         x_samples_ddim = model.decode_first_stage(samples_ddim)
                         x_samples_ddim = torch.clamp((x_samples_ddim + 1.0) / 2.0, min=0.0, max=1.0)
+<<<<<<< HEAD
                         x_samples_ddim = x_samples_ddim.cpu().permute(0, 2, 3, 1).numpy()
 
                         x_checked_image, has_nsfw_concept = check_safety(x_samples_ddim)
@@ -353,6 +372,18 @@ def main():
 
                         if not opt.skip_grid:
                             all_samples.append(x_checked_image_torch)
+=======
+
+                        if not opt.skip_save:
+                            for x_sample in x_samples_ddim:
+                                x_sample = 255. * rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
+                                Image.fromarray(x_sample.astype(np.uint8)).save(
+                                    os.path.join(sample_path, f"{base_count:05}.png"))
+                                base_count += 1
+
+                        if not opt.skip_grid:
+                            all_samples.append(x_samples_ddim)
+>>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a
 
                 if not opt.skip_grid:
                     # additionally, save as grid
@@ -362,9 +393,13 @@ def main():
 
                     # to image
                     grid = 255. * rearrange(grid, 'c h w -> h w c').cpu().numpy()
+<<<<<<< HEAD
                     img = Image.fromarray(grid.astype(np.uint8))
                     img = put_watermark(img, wm_encoder)
                     img.save(os.path.join(outpath, f'grid-{grid_count:04}.png'))
+=======
+                    Image.fromarray(grid.astype(np.uint8)).save(os.path.join(outpath, f'grid-{grid_count:04}.png'))
+>>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a
                     grid_count += 1
 
                 toc = time.time()
