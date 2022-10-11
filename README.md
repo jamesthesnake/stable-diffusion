@@ -1,7 +1,5 @@
 <h1 align='center'><b>Stable Diffusion Dream Script</b></h1>
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 [**High-Resolution Image Synthesis with Latent Diffusion Models**](https://ommer-lab.com/research/latent-diffusion-models/)<br/>
 [Robin Rombach](https://github.com/rromb)\*,
 [Andreas Blattmann](https://github.com/ablattmann)\*,
@@ -10,21 +8,15 @@
 [Björn Ommer](https://hci.iwr.uni-heidelberg.de/Staff/bommer)<br/>
 _[CVPR '22 Oral](https://openaccess.thecvf.com/content/CVPR2022/html/Rombach_High-Resolution_Image_Synthesis_With_Latent_Diffusion_Models_CVPR_2022_paper.html) |
 [GitHub](https://github.com/CompVis/latent-diffusion) | [arXiv](https://arxiv.org/abs/2112.10752) | [Project page](https://ommer-lab.com/research/latent-diffusion-models/)_
-=======
-=======
->>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a
 <p align='center'>
 <img src="static/logo_temp.png"/>
 </p>
 
-<<<<<<< HEAD
 This is a fork of CompVis/stable-diffusion, the wonderful open source
 text-to-image generator. This fork supports:
 
 1. An interactive command-line interface that accepts the same prompt
    and switches as the Discord bot.
->>>>>>> d524e5797d33eabb6b2ab9cb36ad61f00a85db73
-=======
 <p align="center">
     <img src="https://img.shields.io/github/last-commit/lstein/stable-diffusion?logo=Python&logoColor=green&style=for-the-badge" alt="last-commit"/>
     <img src="https://img.shields.io/github/stars/lstein/stable-diffusion?logo=GitHub&style=for-the-badge" alt="stars"/>
@@ -38,17 +30,12 @@ text-to-image generator. This fork supports:
 
 1. An interactive command-line interface that accepts the same prompt
    and switches as the Discord bot.
->>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a
 
 2. Support for img2img in which you provide a seed image to build on
    top of.
 
 3. A basic Web interface that allows you to run a local web server for
    generating images in your browser.
-<<<<<<< HEAD
-   
-=======
->>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a
 4. A notebook for running the code on Google Colab.
 
 5. Upscaling and face fixing using the optional ESRGAN and GFPGAN
@@ -65,14 +52,8 @@ and make feature requests, and check back periodically for
 improvements and bug fixes.
 
 # Table of Contents
-<<<<<<< HEAD
-1. [Major Features](#features)
-2. [Changelog](#changes)
-=======
-
 1. [Major Features](#features)
 2. [Changelog](#latest)
->>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a
 3. [Installation](#installation)
 4. [Troubleshooting](#troubleshooting)
 5. [Support](#support)
