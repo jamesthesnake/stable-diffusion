@@ -35,7 +35,6 @@ NOW THEREFORE, You and Licensor agree as follows:
 - "Contributor" means Licensor and any individual or Legal Entity on behalf of whom a Contribution has been received by Licensor and subsequently incorporated within the Model.
 =======
 MIT License
->>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a
 
 Copyright (c) 2022 Lincoln D. Stein (https://github.com/lstein)
 
@@ -47,7 +46,6 @@ copyrights:
 Copyright (c) 2022 Machine Vision and Learning Group, LMU Munich
 Copyright (c) 2022 Robin Rombach and Patrick Esser and contributors
 
-<<<<<<< HEAD
 You agree not to use the Model or Derivatives of the Model:
 - In any way that violates any applicable national, federal, state, local or international law or regulation;
 - For the purpose of exploiting, harming or attempting to exploit or harm minors in any way;
@@ -95,7 +93,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-<<<<<<< HEAD
->>>>>>> d524e5797d33eabb6b2ab9cb36ad61f00a85db73
-=======
->>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a

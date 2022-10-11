@@ -28,8 +28,6 @@ text-to-image generator. This fork supports:
 This is a fork of CompVis/stable-diffusion, the wonderful open source
 text-to-image generator. This fork supports:
 
-1. An interactive command-line interface that accepts the same prompt
-   and switches as the Discord bot.
 
 2. Support for img2img in which you provide a seed image to build on
    top of.
@@ -52,6 +50,7 @@ and make feature requests, and check back periodically for
 improvements and bug fixes.
 
 # Table of Contents
+
 1. [Major Features](#features)
 2. [Changelog](#latest)
 3. [Installation](#installation)
@@ -81,310 +80,7 @@ file's metadata where it can be retrieved using scripts/images2prompt.py
 The script is confirmed to work on Linux and Windows systems. It should
 work on MacOSX as well, but this is not confirmed. Note that this script
 runs from the command-line (CMD or Terminal window), and does not have a GUI.
-<<<<<<< HEAD
 
-```
-(ldm) ~/stable-diffusion$ python3 ./scripts/dream.py
-* Initializing, be patient...
-Loading model from models/ldm/text2img-large/model.ckpt
-(...more initialization messages...)
-
-* Initialization done! Awaiting your command...
-dream> ashley judd riding a camel -n2 -s150
-Outputs:
-   outputs/img-samples/00009.png: "ashley judd riding a camel" -n2 -s150 -S 416354203
-   outputs/img-samples/00010.png: "ashley judd riding a camel" -n2 -s150 -S 1362479620
-
-dream> "there's a fly in my soup" -n6 -g
-    outputs/img-samples/00011.png: "there's a fly in my soup" -n6 -g -S 2685670268
-    seeds for individual rows: [2685670268, 1216708065, 2335773498, 822223658, 714542046, 3395302430]
-dream> q
-
-# this shows how to retrieve the prompt stored in the saved image's metadata
-(ldm) ~/stable-diffusion$ python3 ./scripts/images2prompt.py outputs/img_samples/*.png
-00009.png: "ashley judd riding a camel" -s150 -S 416354203
-00010.png: "ashley judd riding a camel" -s150 -S 1362479620
-00011.png: "there's a fly in my soup" -n6 -g -S 2685670268
-```
-
-<p align='center'>
-<img src="static/dream-py-demo.png"/>
-</p>
-
-The dream> prompt's arguments are pretty much identical to those used
-in the Discord bot, except you don't need to type "!dream" (it doesn't
-hurt if you do). A significant change is that creation of individual
-images is now the default unless --grid (-g) is given. For backward
-compatibility, the -i switch is recognized. For command-line help
-type -h (or --help) at the dream> prompt.
-
-The script itself also recognizes a series of command-line switches
-that will change important global defaults, such as the directory for
-image outputs and the location of the model weight files.
-
-## Image-to-Image
-
-This script also provides an img2img feature that lets you seed your
-creations with a drawing or photo. This is a really cool feature that tells
-stable diffusion to build the prompt on top of the image you provide, preserving
-the original's basic shape and layout. To use it, provide the --init_img
-option as shown here:
-
-```
-dream> "waterfall and rainbow" --init_img=./init-images/crude_drawing.png --strength=0.5 -s100 -n4
-```
-
-The --init_img (-I) option gives the path to the seed picture. --strength (-f) controls how much
-the original will be modified, ranging from 0.0 (keep the original intact), to 1.0 (ignore the original
-completely). The default is 0.75, and ranges from 0.25-0.75 give interesting results.
-
-You may also pass a -v<count> option to generate count variants on the original image. This is done by
-passing the first generated image back into img2img the requested number of times. It generates interesting
-variants.
-
-## GFPGAN and Real-ESRGAN Support
-
-The script also provides the ability to do face restoration and
-upscaling with the help of GFPGAN and Real-ESRGAN respectively.
-
-To use the ability, clone the **[GFPGAN
-repository](https://github.com/TencentARC/GFPGAN)** and follow their
-installation instructions. By default, we expect GFPGAN to be
-installed in a 'GFPGAN' sibling directory. Be sure that the `"ldm"`
-conda environment is active as you install GFPGAN.
-
-You can use the `--gfpgan_dir` argument with `dream.py` to set a
-custom path to your GFPGAN directory. _There are other GFPGAN related
-boot arguments if you wish to customize further._
-
-You can install **Real-ESRGAN** by typing the following command.
-
-```
-pip install realesrgan
-```
-
-**Preloading Models**
-
-Users whose GPU machines are isolated from the Internet (e.g. on a
-University cluster) should be aware that the first time you run
-dream.py with GFPGAN and Real-ESRGAN turned on, it will try to
-download model files from the Internet. To rectify this, you may run
-`python3 scripts/preload_models.py` after you have installed GFPGAN
-and all its dependencies.
-
-**Usage**
-
-You will now have access to two new prompt arguments.
-
-**Upscaling**
-
-`-U : <upscaling_factor> <upscaling_strength>`
-
-The upscaling prompt argument takes two values. The first value is a
-scaling factor and should be set to either `2` or `4` only. This will
-either scale the image 2x or 4x respectively using different models.
-
-You can set the scaling stength between `0` and `1.0` to control
-intensity of the of the scaling. This is handy because AI upscalers
-generally tend to smooth out texture details. If you wish to retain
-some of those for natural looking results, we recommend using values
-between `0.5 to 0.8`.
-
-If you do not explicitly specify an upscaling_strength, it will
-default to 0.75.
-
-**Face Restoration**
-
-`-G : <gfpgan_strength>`
-
-This prompt argument controls the strength of the face restoration
-that is being applied. Similar to upscaling, values between `0.5 to 0.8` are recommended.
-
-You can use either one or both without any conflicts. In cases where
-you use both, the image will be first upscaled and then the face
-restoration process will be executed to ensure you get the highest
-quality facial features.
-
-`--save_orig`
-
-When you use either `-U` or `-G`, the final result you get is upscaled
-or face modified. If you want to save the original Stable Diffusion
-generation, you can use the `-save_orig` prompt argument to save the
-original unaffected version too.
-
-**Example Usage**
-
-```
-dream > superman dancing with a panda bear -U 2 0.6 -G 0.4
-```
-
-This also works with img2img:
-
-```
-dream> a man wearing a pineapple hat -I path/to/your/file.png -U 2 0.5 -G 0.6
-```
-
-**Note**
-
-GFPGAN and Real-ESRGAN are both memory intensive. In order to avoid
-crashes and memory overloads during the Stable Diffusion process,
-these effects are applied after Stable Diffusion has completed its
-work.
-
-In single image generations, you will see the output right away but
-when you are using multiple iterations, the images will first be
-generated and then upscaled and face restored after that process is
-complete. While the image generation is taking place, you will still
-be able to preview the base images.
-
-If you wish to stop during the image generation but want to upscale or
-face restore a particular generated image, pass it again with the same
-prompt and generated seed along with the `-U` and `-G` prompt
-arguments to perform those actions.
-
-## Google Colab
-
-Stable Diffusion AI Notebook: <a href="https://colab.research.google.com/github/lstein/stable-diffusion/blob/main/Stable_Diffusion_AI_Notebook.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> <br>
-Open and follow instructions to use an isolated environment running Dream.<br>
-
-Output example:
-![Colab Notebook](static/colab_notebook.png)
-
-## Barebones Web Server
-
-As of version 1.10, this distribution comes with a bare bones web
-server (see screenshot). To use it, run the _dream.py_ script by
-adding the **--web** option.
-
-```
-(ldm) ~/stable-diffusion$ python3 scripts/dream.py --web
-```
-
-You can then connect to the server by pointing your web browser at
-http://localhost:9090, or to the network name or IP address of the server.
-
-Kudos to [Tesseract Cat](https://github.com/TesseractCat) for
-contributing this code, and to [dagf2101](https://github.com/dagf2101)
-for refining it.
-
-![Dream Web Server](static/dream_web_server.png)
-
-## Reading Prompts from a File
-
-You can automate dream.py by providing a text file with the prompts
-you want to run, one line per prompt. The text file must be composed
-with a text editor (e.g. Notepad) and not a word processor. Each line
-should look like what you would type at the dream> prompt:
-
-```
-a beautiful sunny day in the park, children playing -n4 -C10
-stormy weather on a mountain top, goats grazing     -s100
-innovative packaging for a squid's dinner           -S137038382
-```
-
-Then pass this file's name to dream.py when you invoke it:
-
-```
-(ldm) ~/stable-diffusion$ python3 scripts/dream.py --from_file "path/to/prompts.txt"
-```
-
-You may read a series of prompts from standard input by providing a filename of "-":
-
-```
-(ldm) ~/stable-diffusion$ echo "a beautiful day" | python3 scripts/dream.py --from_file -
-```
-
-## Shortcut for reusing seeds from the previous command
-
-Since it is so common to reuse seeds while refining a prompt, there is
-now a shortcut as of version 1.11. Provide a **-S** (or **--seed**)
-switch of -1 to use the seed of the most recent image generated. If
-you produced multiple images with the **-n** switch, then you can go
-back further using -2, -3, etc. up to the first image generated by the
-previous command. Sorry, but you can't go back further than one
-command.
-
-Here's an example of using this to do a quick refinement. It also
-illustrates using the new **-G** switch to turn on upscaling and
-face enhancement (see previous section):
-
-```
-dream> a cute child playing hopscotch -G0.5
-[...]
-outputs/img-samples/000039.3498014304.png: "a cute child playing hopscotch" -s50 -b1 -W512 -H512 -C7.5 -mk_lms -S3498014304
-
-# I wonder what it will look like if I bump up the steps and set facial enhancement to full strength?
-dream> a cute child playing hopscotch -G1.0 -s100 -S -1
-reusing previous seed 3498014304
-[...]
-outputs/img-samples/000040.3498014304.png: "a cute child playing hopscotch" -G1.0 -s100 -b1 -W512 -H512 -C7.5 -mk_lms -S3498014304
-```
-
-## Weighted Prompts
-
-You may weight different sections of the prompt to tell the sampler to attach different levels of
-priority to them, by adding :(number) to the end of the section you wish to up- or downweight.
-For example consider this prompt:
-
-```
-    tabby cat:0.25 white duck:0.75 hybrid
-```
-
-This will tell the sampler to invest 25% of its effort on the tabby
-cat aspect of the image and 75% on the white duck aspect
-(surprisingly, this example actually works). The prompt weights can
-use any combination of integers and floating point numbers, and they
-do not need to add up to 1.
-
-## Personalizing Text-to-Image Generation
-
-You may personalize the generated images to provide your own styles or objects by training a new LDM checkpoint
-and introducing a new vocabulary to the fixed model.
-
-To train, prepare a folder that contains images sized at 512x512 and execute the following:
-
-```
-# As the default backend is not available on Windows, if you're using that platform, execute SET PL_TORCH_DISTRIBUTED_BACKEND=gloo
-(ldm) ~/stable-diffusion$ python3 ./main.py --base ./configs/stable-diffusion/v1-finetune.yaml \
-                                            -t \
-                                            --actual_resume ./models/ldm/stable-diffusion-v1/model.ckpt \
-                                            -n my_cat \
-                                            --gpus 0, \
-                                            --data_root D:/textual-inversion/my_cat \
-                                            --init_word 'cat'
-```
-
-During the training process, files will be created in /logs/[project][time][project]/
-where you can see the process.
-
-conditioning\* contains the training prompts
-inputs, reconstruction the input images for the training epoch
-samples, samples scaled for a sample of the prompt and one with the init word provided
-
-On a RTX3090, the process for SD will take ~1h @1.6 iterations/sec.
-
-Note: According to the associated paper, the optimal number of images
-is 3-5. Your model may not converge if you use more images than that.
-
-Training will run indefinately, but you may wish to stop it before the
-heat death of the universe, when you find a low loss epoch or around
-~5000 iterations.
-
-Once the model is trained, specify the trained .pt file when starting
-dream using
-
-```
-(ldm) ~/stable-diffusion$ python3 ./scripts/dream.py --embedding_path /path/to/embedding.pt --full_precision
-```
-
-Then, to utilize your subject at the dream prompt
-
-```
-dream> "a photo of *"
-```
-
-this also works with image2image
-=======
 
 ```
 (ldm) ~/stable-diffusion$ python3 ./scripts/dream.py
@@ -546,24 +242,20 @@ You can install **Real-ESRGAN** by typing the following command.
 ```
 pip install realesrgan
 ```
->>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a
 
 **Preloading Models**
 
 <<<<<<< HEAD
 [The CreativeML OpenRAIL M license](LICENSE) is an [Open RAIL M license](https://www.licenses.ai/blog/2022/8/18/naming-convention-of-responsible-ai-licenses), adapted from the work that [BigScience](https://bigscience.huggingface.co/) and [the RAIL Initiative](https://www.licenses.ai/) are jointly carrying in the area of responsible AI licensing. See also [the article about the BLOOM Open RAIL license](https://bigscience.huggingface.co/blog/the-bigscience-rail-license) on which our license is based.
-=======
   - Image filenames will now never fill gaps in the sequence, but will be assigned the
     next higher name in the chosen directory. This ensures that the alphabetic and chronological
     sort orders are the same.
 
 - v1.06 (23 August 2022)
->>>>>>> d524e5797d33eabb6b2ab9cb36ad61f00a85db73
 
   - Added weighted prompt support contributed by [xraxra](https://github.com/xraxra)
   - Example of using weighted prompts to tweak a demonic figure contributed by [bmaltais](https://github.com/bmaltais)
 
-<<<<<<< HEAD
 We currently provide the following checkpoints:
 
 - `sd-v1-1.ckpt`: 237k steps at resolution `256x256` on [laion2B-en](https://huggingface.co/datasets/laion/laion2B-en).
@@ -573,7 +265,6 @@ We currently provide the following checkpoints:
 filtered to images with an original size `>= 512x512`, and an estimated watermark probability `< 0.5`. The watermark estimate is from the [LAION-5B](https://laion.ai/blog/laion-5b/) metadata, the aesthetics score is estimated using the [LAION-Aesthetics Predictor V2](https://github.com/christophschuhmann/improved-aesthetic-predictor)).
 - `sd-v1-3.ckpt`: Resumed from `sd-v1-2.ckpt`. 195k steps at resolution `512x512` on "laion-aesthetics v2 5+" and 10\% dropping of the text-conditioning to improve [classifier-free guidance sampling](https://arxiv.org/abs/2207.12598).
 - `sd-v1-4.ckpt`: Resumed from `sd-v1-2.ckpt`. 225k steps at resolution `512x512` on "laion-aesthetics v2 5+" and 10\% dropping of the text-conditioning to improve [classifier-free guidance sampling](https://arxiv.org/abs/2207.12598).
-=======
 - v1.05 (22 August 2022 - after the drop)
 
   - Filenames now use the following formats:
@@ -628,7 +319,6 @@ If you do not explicitly specify an upscaling_strength, it will
 default to 0.75.
 
 **Face Restoration**
->>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a
 
 `-G : <gfpgan_strength>`
 
@@ -649,9 +339,7 @@ original unaffected version too.
 
 **Example Usage**
 
-<<<<<<< HEAD
 After [obtaining the `stable-diffusion-v1-*-original` weights](#weights), link them
-=======
   - Updated README to reflect installation of the released weights.
   - Suppressed very noisy and inconsequential warning when loading the frozen CLIP
     tokenizer.
@@ -733,7 +421,6 @@ If you wish to stop during the image generation but want to upscale or
 face restore a particular generated image, pass it again with the same
 prompt and generated seed along with the `-U` and `-G` prompt
 arguments to perform those actions.
->>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a
 
 ## Google Colab
 
@@ -777,7 +464,6 @@ optional arguments:
 5. Use anaconda to copy necessary python packages, create a new python environment named "ldm",
    and activate the environment.
 
->>>>>>> d524e5797d33eabb6b2ab9cb36ad61f00a85db73
 ```
 (base) ~/stable-diffusion$ conda env create -f environment.yaml
 (base) ~/stable-diffusion$ conda activate ldm
@@ -826,7 +512,6 @@ link from the stable-diffusion model.ckpt file, to the true location of the sd-v
 ```
 
 8. Start generating images!
->>>>>>> d524e5797d33eabb6b2ab9cb36ad61f00a85db73
 
 =======
 Stable Diffusion AI Notebook: <a href="https://colab.research.google.com/github/lstein/stable-diffusion/blob/main/Stable_Diffusion_AI_Notebook.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> <br>
@@ -865,7 +550,6 @@ should look like what you would type at the dream> prompt:
 a beautiful sunny day in the park, children playing -n4 -C10
 stormy weather on a mountain top, goats grazing     -s100
 innovative packaging for a squid's dinner           -S137038382
->>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a
 ```
 # for the pre-release weights use the -l or --liaon400m switch
 (ldm) ~/stable-diffusion$ python3 scripts/dream.py -l
@@ -885,7 +569,6 @@ innovative packaging for a squid's dinner           -S137038382
    directory, and then launch the dream script (step 8). If you forget to activate the ldm environment, the script will fail with multiple ModuleNotFound errors.
 
 ### Updating to newer versions of the script
->>>>>>> d524e5797d33eabb6b2ab9cb36ad61f00a85db73
 
 This distribution is changing rapidly. If you used the "git clone" method (step 5) to download the stable-diffusion directory, then to update to the latest and greatest version, launch the Anaconda window, enter "stable-diffusion", and type:
 
@@ -920,7 +603,6 @@ cd stable-diffusion
 6. Run the following two commands:
 
 ```
-<<<<<<< HEAD
 @misc{rombach2021highresolution,
       title={High-Resolution Image Synthesis with Latent Diffusion Models}, 
       author={Robin Rombach and Andreas Blattmann and Dominik Lorenz and Patrick Esser and Björn Ommer},
@@ -940,7 +622,6 @@ This will install all python requirements and activate the "ldm" environment whi
 
 ```
 python scripts\preload_models.py
->>>>>>> d524e5797d33eabb6b2ab9cb36ad61f00a85db73
 ```
 
 =======
@@ -1214,7 +895,6 @@ This will install all python requirements and activate the "ldm" environment whi
 python scripts\preload_models.py
 ```
 
->>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a
 This installs several machine learning models that stable diffusion
 requires. (Note that this step is required. I created it because some people
 are using GPU systems that are behind a firewall and the models can't be
@@ -1386,7 +1066,6 @@ pull request:
 git clone https://github.com/<name of contributor>/stable-diffusion/tree/<name
 of branch>
 ~~~~
-=======
 - PROBLEM: During "conda env create -f environment.yaml", conda
   hangs indefinitely.
 
@@ -1446,7 +1125,6 @@ of branch>
 git clone https://github.com/<name of contributor>/stable-diffusion/tree/<name
 of branch>
 ```
->>>>>>> 1a8e2e1ff383ebbaadd1a15b9ad0ab7717e0e65a
 
 You will need to go through the install procedure again, but it should
 be fast because all the dependencies are already loaded.
